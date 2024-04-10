@@ -40,4 +40,25 @@ public class MemberJpaRepository {
     public Member find(Long id) {
         return em.find(Member.class, id);
     }
+
+    public List<Member> findByUsernameAndAgeGreaterThan(String username, int age) {
+        return em.createQuery("select m from Member m where username = :username and age >= :age", Member.class)
+                .setParameter("username", username)
+                .setParameter("age", age)
+                .getResultList();
+    }
+
+    public List<Member> findByPage(int offset, int limit) {
+        return em.createQuery("select m from Member m order by m.username desc", Member.class)
+                .setFirstResult(offset)
+                .setMaxResults(limit)
+                .getResultList();
+    }
+
+    public int bulkIncAge() {
+        int result = em.createQuery("update Member m set m.age = m.age + 1")
+                .executeUpdate();
+        em.clear();
+        return result;
+    }
 }

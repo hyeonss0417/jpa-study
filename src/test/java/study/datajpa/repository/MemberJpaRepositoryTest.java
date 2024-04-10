@@ -7,6 +7,8 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.entity.Member;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
@@ -47,5 +49,33 @@ class MemberJpaRepositoryTest {
 
         long count2 = memberJpaRepository.count();
         assertThat(count2).isEqualTo(0);
+    }
+
+    @Test
+    public void findByUsernameAndAgeGreaterThan() {
+        Member m1 = new Member("test", 10, null);
+        Member m2 = new Member("test", 20, null);
+        memberJpaRepository.save(m1);
+        memberJpaRepository.save(m2);
+
+        List<Member> result = memberJpaRepository.findByUsernameAndAgeGreaterThan("test", 15);
+
+        assertThat(result.get(0)).isEqualTo(m2);
+        assertThat(result.size()).isEqualTo(1);
+    }
+
+    @Test
+    public void bulkIncAge() {
+        Member m1 = memberJpaRepository.save(new Member("test", 10, null));
+        Member m2 = memberJpaRepository.save(new Member("test", 20, null));
+        Member m3 = memberJpaRepository.save(new Member("test", 30, null));
+
+        int result = memberJpaRepository.bulkIncAge();
+
+        assertThat(result).isEqualTo(3);
+        List<Member> members = memberJpaRepository.findAll();
+        assertThat(members.get(0).getAge()).isEqualTo(11);
+        assertThat(members.get(1).getAge()).isEqualTo(21);
+        assertThat(members.get(2).getAge()).isEqualTo(31);
     }
 }

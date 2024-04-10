@@ -1,2 +1,24 @@
-package study.datajpa.dto;public class MemberDto {
+package study.datajpa.dto;
+
+import lombok.Data;
+import study.datajpa.entity.Member;
+
+@Data
+public class MemberDto {
+    private Long id;
+    private String username;
+    private String teamName;
+
+    public MemberDto(Long id, String username, String teamName) {
+        this.id = id;
+        this.username = username;
+        this.teamName = teamName;
+    }
+
+    public MemberDto(Member member) {
+        String teamName = member.getTeam() == null ? null : member.getTeam().getName();
+        this.id = member.getId();
+        this.username = member.getUsername();
+        this.teamName = teamName;
+    }
 }
