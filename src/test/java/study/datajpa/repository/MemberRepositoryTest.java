@@ -14,6 +14,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.dto.MemberDto;
+import study.datajpa.dto.MemberProjection;
+import study.datajpa.dto.NestedClosedProjection;
+import study.datajpa.dto.UsernameOnlyDto;
 import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
 
@@ -236,5 +239,50 @@ class MemberRepositoryTest {
         System.out.println("updatedAt = " + findMember.getUpdatedAt());
         System.out.println("createdBy = " + findMember.getCreatedBy());
         System.out.println("updatedBy = " + findMember.getLastModifiedBy());
+    }
+
+    @Test
+    public void findUsernameProjection() {
+        memberRepository.save(new Member("member1", 10, null));
+        for (UsernameOnly t : memberRepository.findUsernameProjectionBy()) {
+            System.out.println("t = " + t.getUsername());
+        }
+    }
+
+    @Test
+    public void findUsernameDtoListBy() {
+        memberRepository.save(new Member("member1", 10, null));
+        for (UsernameOnlyDto t : memberRepository.findUsernameDtoListBy()) {
+            System.out.println("t = " + t.username());
+        }
+    }
+
+    @Test
+    public void findProjectionBy() {
+        memberRepository.save(new Member("member1", 10, null));
+        for (UsernameOnlyDto t : memberRepository.findProjectionBy(UsernameOnlyDto.class)) {
+            System.out.println("t = " + t.username());
+        }
+    }
+
+    @Test
+    public void findProjectionBy2() {
+        Team t1 = teamRepository.save(new Team("teamA"));
+        memberRepository.save(new Member("member1", 10, t1));
+        for (NestedClosedProjection t : memberRepository.findProjectionBy(NestedClosedProjection.class)) {
+            System.out.println("t.username = " + t.getUsername());
+            System.out.println("t.teamName = " + t.getTeam().getName());
+        }
+    }
+
+    @Test
+    public void findByNativeProjection() {
+        Team t1 = teamRepository.save(new Team("teamA"));
+        memberRepository.save(new Member("member1", 10, t1));
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        for (MemberProjection t : memberRepository.findByNativeProjection(pageRequest)) {
+            System.out.println("t.username = " + t.getUsername());
+            System.out.println("t.teamName = " + t.getTeamName());
+        }
     }
 }

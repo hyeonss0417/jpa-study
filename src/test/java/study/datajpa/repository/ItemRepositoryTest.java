@@ -9,7 +9,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class ItemRepositoryTest {
-    @Autowired ItemRepository itemRepository;
+    @Autowired
+    ItemRepository itemRepository;
 
     @Test
     public void save() {
